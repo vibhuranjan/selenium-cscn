@@ -1,0 +1,3 @@
+
+[Status] http://pp.avacon-netz.de/registrieren  ::Kundenportal
+[Status] http://pp.bayernwerk-netz.de/registrieren  ::Kundenportal
