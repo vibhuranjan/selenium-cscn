@@ -1,6 +1,11 @@
 package com.revu.cscn.testing;
 
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -14,11 +19,6 @@ import com.revu.cscn.constant.GlobalConstants;
 import com.revu.cscn.utils.CommonUtil;
 import com.revu.cscn.utils.LoadProperties;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.util.List;
-
 public class Design {
 
 	static final Logger logger = Logger.getLogger(Design.class);
@@ -26,6 +26,7 @@ public class Design {
 	private JFrame frame;
 	private JLabel lblNewLabel;
 	String filePath = "";
+	List<String> listOfFileNames = null;
 
 	/**
 	 * Launch the application.
@@ -64,7 +65,7 @@ public class Design {
 		frame.getContentPane().add(lblEnvironment);
 		
 		final JComboBox<Object> comboBox = new JComboBox<Object>();
-		comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] {"NA", "INT", "QA", "PP", "P"}));
+		comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] {"NA", "INT", "QA", "PP", "P", "ALL"}));
 		comboBox.setBounds(148, 26, 89, 20);
 		frame.getContentPane().add(comboBox);
 		
@@ -80,14 +81,20 @@ public class Design {
 						filePath = LoadProperties.getProperties().getProperty(GlobalConstants.PP);
 					} else if(comboBox.getModel().getSelectedItem().toString() == GlobalConstants.P){
 						filePath = LoadProperties.getProperties().getProperty(GlobalConstants.P);
+					} else if(comboBox.getModel().getSelectedItem().toString() == GlobalConstants.ALL){
+						listOfFileNames = new ArrayList<String>();
+						listOfFileNames.add(LoadProperties.getProperties().getProperty(GlobalConstants.INT));
+						listOfFileNames.add(LoadProperties.getProperties().getProperty(GlobalConstants.QA));
+						listOfFileNames.add(LoadProperties.getProperties().getProperty(GlobalConstants.PP));
+						listOfFileNames.add(LoadProperties.getProperties().getProperty(GlobalConstants.P));
 					}
-					List<String> listOfUrls = CommonUtil.readDataFromFile(filePath);
-					List<String> listOfTitles = MainClass.checkVanityUrl(listOfUrls);
-					for(int i=0;i<listOfTitles.size();i++){
-						String dataToWrite = "[Status] "+listOfUrls.get(i)+"  ::"+listOfTitles.get(i);
-						CommonUtil.writeToFile(LoadProperties.getProperties().getProperty("output.file"), dataToWrite);
+					if(comboBox.getModel().getSelectedItem().toString() == GlobalConstants.ALL){
+						for(String fileNamePath : listOfFileNames){
+							processSingleFile(fileNamePath);
+						}
+					} else{
+						processSingleFile(filePath);
 					}
-					
 					lblNewLabel.setText("Processing done!");
 				} catch (IOException ex) {
 					logger.error(ex);
@@ -100,5 +107,18 @@ public class Design {
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(148, 123, 177, 14);
 		frame.getContentPane().add(lblNewLabel);
+	}
+	
+	/**
+	 * @param filePath
+	 * @throws IOException
+	 */
+	private void processSingleFile(String filePath) throws IOException{
+		List<String> listOfUrls = CommonUtil.readDataFromFile(filePath);
+		List<String> listOfTitles = MainClass.checkVanityUrl(listOfUrls);
+		for(int i=0;i<listOfTitles.size();i++){
+			String dataToWrite = "[Status] "+listOfUrls.get(i)+"  ::"+listOfTitles.get(i);
+			CommonUtil.writeToFile(LoadProperties.getProperties().getProperty("output.file"), dataToWrite);
+		}
 	}
 }

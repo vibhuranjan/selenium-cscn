@@ -6,4 +6,5 @@ public enum GlobalConstants {
 	public static final String INT = "INT";
 	public static final String PP = "PP";
 	public static final String P = "P";
+	public static final String ALL = "ALL";
 }

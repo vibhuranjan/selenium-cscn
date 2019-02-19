@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.revu.cscn.utils.CommonUtil;
@@ -40,7 +41,8 @@ public class MainClass {
 	
 	public static List<String> checkVanityUrl(List<String> listOfUrls){
 		List<String> listOfTitles = new ArrayList<String>();
-		WebDriver driver = new FirefoxDriver();
+		System.setProperty("webdriver.chrome.driver", "./tools/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
 		for(String urlString : listOfUrls){
 			driver.get(urlString);
 			listOfTitles.add(driver.getTitle());
